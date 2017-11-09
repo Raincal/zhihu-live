@@ -1,0 +1,13 @@
+{
+  "name": "zhihu-live",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^4.0.0",
+    "puppeteer": "^0.12.0"
+  },
+  "devDependencies": {
+    "@types/puppeteer": "^0.12.2"
+  }
+}
