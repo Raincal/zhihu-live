@@ -15,9 +15,9 @@ const puppeteer = require('puppeteer')
   })
 
   /**
-  * Inject cookies from previously saved cookies file
-  * @Param {string} file
-  */
+   * Inject cookies from previously saved cookies file
+   * @Param {string} file
+   */
   async function injectCookiesFromFile(file) {
     let cb = async function(_cookies) {
       console.log('Injecting cookies from file: %s', JSON.stringify(_cookies))
@@ -34,7 +34,7 @@ const puppeteer = require('puppeteer')
 
   /**
    * Write Cookies object to target JSON file
-   * @param {string} targetFile 
+   * @param {string} targetFile
    */
   async function saveCookies(targetFile) {
     let cookies = await page.cookies()
@@ -43,8 +43,8 @@ const puppeteer = require('puppeteer')
 
   /**
    * Write JSON object to specified target file
-   * @param {string} jsonObj 
-   * @param {string} targetFile 
+   * @param {string} jsonObj
+   * @param {string} targetFile
    */
   async function saveToJSONFile(jsonObj, targetFile) {
     return new Promise((resolve, reject) => {
@@ -68,8 +68,8 @@ const puppeteer = require('puppeteer')
 
   /**
    * Get JSON object from page
-   * @param {string} url 
-   * @returns 
+   * @param {string} url
+   * @returns
    */
   async function jsonObj(url) {
     const tmpPage = await browser.newPage()
@@ -82,7 +82,7 @@ const puppeteer = require('puppeteer')
 
   /**
    * Get JSON object from local file
-   * @param {string} file 
+   * @param {string} file
    */
   function getDataFromFile(file) {
     return new Promise((resolve, reject) => {
@@ -98,7 +98,7 @@ const puppeteer = require('puppeteer')
 
   /**
    * Generate Live Screenshot
-   * @param {string} id 
+   * @param {string} id
    */
   async function generateLiveScreenshot(id) {
     await page.goto(`https://www.zhihu.com/lives/users/${id}`)
@@ -108,7 +108,10 @@ const puppeteer = require('puppeteer')
   async function isLogin() {
     await page.goto('https://www.zhihu.com')
     const response = await page.goto('https://www.zhihu.com/settings/profile')
-    if (response.url() === 'https://www.zhihu.com/signup?next=%2Fsettings%2Fprofile') {
+    if (
+      response.url() ===
+      'https://www.zhihu.com/signup?next=%2Fsettings%2Fprofile'
+    ) {
       return false
     } else if (response.url() === 'https://www.zhihu.com/settings/profile') {
       console.log('已登录')
@@ -125,7 +128,7 @@ const puppeteer = require('puppeteer')
     try {
       const livesInfo = await getDataFromFile('./public/lives.json')
       console.log(`已获取本地 Live 信息，数量 ${livesInfo.length}`)
-      await browser.close()
+      await gotoLive(livesInfo.length)
     } catch (err) {
       console.log('本地没有 Live 信息')
       await gotoLive()
@@ -151,25 +154,32 @@ const puppeteer = require('puppeteer')
     await gotoLive()
   }
 
-  async function gotoLive() {
+  async function gotoLive(num = 0) {
     console.log('获取个人信息')
     const self = await jsonObj('https://api.zhihu.com/lives/people/self')
 
     console.log('获取 Live 信息')
     const lives = await jsonObj(`https://api.zhihu.com/people/${self.id}/lives`)
 
-    console.log('保存已购买 Live')
-    await saveToJSONFile(lives.data, './public/lives.json')
+    if (lives.data.length == num) {
+      console.log('Live 已爬取')
+      await browser.close()
+    } else {
+      console.log('保存已购买 Live')
+      await saveToJSONFile(lives.data, './public/lives.json')
 
-    await generateLiveScreenshot(self.id)
+      await generateLiveScreenshot(self.id)
 
-    await getLiveMessages(lives.data)
+      await getLiveMessages(lives.data)
+    }
   }
 
   async function getLiveMessages(lives) {
     lives.map(async live => {
       const liveMsg = await jsonObj(
-        `https://api.zhihu.com/lives/${live.id}/messages?chronology=asc&limit=1000`
+        `https://api.zhihu.com/lives/${
+          live.id
+        }/messages?chronology=asc&limit=1000`
       )
       await saveToJSONFile(liveMsg.data, `./public/messages/${live.id}.json`)
     })
