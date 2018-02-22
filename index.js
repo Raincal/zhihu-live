@@ -73,7 +73,7 @@ const puppeteer = require('puppeteer')
    */
   async function jsonObj(url) {
     const tmpPage = await browser.newPage()
-    await tmpPage.goto(url, { waitUntil: 'networkidle' })
+    await tmpPage.goto(url, { waitUntil: 'networkidle2' })
     let html = await tmpPage.$eval('pre', el => el.innerHTML)
     let result = JSON.parse(html)
     tmpPage.close()
@@ -102,19 +102,15 @@ const puppeteer = require('puppeteer')
    */
   async function generateLiveScreenshot(id) {
     await page.goto(`https://www.zhihu.com/lives/users/${id}`)
-    await page.waitForNavigation({
-      timeout: 0,
-      waitUntil: 'networkidle'
-    })
     await page.screenshot({ path: 'zhihu.png' })
   }
 
   async function isLogin() {
     await page.goto('https://www.zhihu.com')
     const response = await page.goto('https://www.zhihu.com/settings/profile')
-    if (response.url === 'https://www.zhihu.com/?next=%2Fsettings%2Fprofile') {
+    if (response.url() === 'https://www.zhihu.com/signup?next=%2Fsettings%2Fprofile') {
       return false
-    } else if (response.url === 'https://www.zhihu.com/settings/profile') {
+    } else if (response.url() === 'https://www.zhihu.com/settings/profile') {
       console.log('已登录')
       return true
     }
@@ -136,15 +132,14 @@ const puppeteer = require('puppeteer')
     }
   } else {
     // 前往登陆页面
-    await page.goto('https://www.zhihu.com/#signin')
-    await page.click('.qrcode-signin-step1 > div:nth-child(4)')
+    await page.goto('https://www.zhihu.com/signin')
 
     // 账号
-    await page.type('div.account > input:nth-child(1)', process.env.ACCOUNT)
+    await page.type('.SignFlow-account input', process.env.ACCOUNT)
     // 密码
-    await page.type('.verification > input:nth-child(1)', process.env.PASSWORD)
+    await page.type('.SignFlow-password input', process.env.PASSWORD)
     // 点击登录
-    await page.click('div.button-wrapper:nth-child(3) > button:nth-child(1)')
+    await page.click('.SignFlow-submitButton')
 
     await page.waitForNavigation({
       timeout: 0
