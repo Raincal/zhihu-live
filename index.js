@@ -175,13 +175,16 @@ const puppeteer = require('puppeteer')
   }
 
   async function getLiveMessages(lives) {
-    lives.map(async live => {
-      const liveMsg = await jsonObj(
-        `https://api.zhihu.com/lives/${
-          live.id
-        }/messages?chronology=asc&limit=1000`
-      )
-      await saveToJSONFile(liveMsg.data, `./public/messages/${live.id}.json`)
-    })
+    await Promise.all(
+      lives.map(async live => {
+        const liveMsg = await jsonObj(
+          `https://api.zhihu.com/lives/${
+            live.id
+          }/messages?chronology=asc&limit=1000`
+        )
+        await saveToJSONFile(liveMsg.data, `./public/messages/${live.id}.json`)
+      })
+    )
+    await browser.close()
   }
 })()
