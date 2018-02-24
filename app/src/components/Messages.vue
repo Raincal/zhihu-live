@@ -66,6 +66,7 @@
 <script>
 import { format } from "date-fns";
 import zh_cn from "date-fns/locale/zh_cn";
+import { Message } from "element-ui";
 
 export default {
   name: "Messages",
@@ -74,11 +75,11 @@ export default {
       messages: [],
       pagesize: 30,
       currentPage: 1,
-      loading: true
+      loading: false
     };
   },
-  created() {
-    this.getMessages(this.$route.params.id);
+  watch: {
+    $route: "getMessages"
   },
   computed: {
     totalCount() {
@@ -89,14 +90,33 @@ export default {
         (this.currentPage - 1) * this.pagesize,
         this.pagesize * this.currentPage
       );
+    },
+    id() {
+      return this.$route.params.id;
     }
   },
+  created() {
+    this.getMessages();
+  },
+  beforeDestroy() {
+    Message.closeAll();
+  },
   methods: {
-    getMessages(id) {
-      this.axios.get(`api/${id}/messages`).then(res => {
-        this.messages = res.data.messages;
-        this.loading = false;
-      });
+    getMessages() {
+      this.loading = true;
+      this.axios
+        .get(`api/${this.id}/messages`)
+        .then(res => {
+          this.messages = res.data.messages;
+          this.loading = false;
+        })
+        .catch(error => {
+          Message({
+            message: error.response.data.error,
+            type: "error"
+          });
+          this.loading = false;
+        });
     },
     formatDate(row) {
       return format(row.created_at * 1000, "YY年MM月DD日 HH:mm", {
