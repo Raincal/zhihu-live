@@ -1,6 +1,14 @@
 import Vue from "vue";
 import axios from "axios";
-import { Table, TableColumn, Pagination, Loading } from "element-ui";
+import {
+  Table,
+  TableColumn,
+  Pagination,
+  Loading,
+  Card,
+  Tag,
+  Rate
+} from "element-ui";
 
 import App from "./App.vue";
 import router from "./router";
@@ -12,6 +20,9 @@ Vue.use(Table);
 Vue.use(TableColumn);
 Vue.use(Pagination);
 Vue.use(Loading);
+Vue.use(Card);
+Vue.use(Tag);
+Vue.use(Rate);
 
 Vue.prototype.axios = axios;
 
