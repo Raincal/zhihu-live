@@ -9,7 +9,7 @@
 import Messages from "@/components/Messages.vue";
 
 export default {
-  name: "home",
+  name: "live",
   components: {
     Messages
   }

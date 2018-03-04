@@ -7,7 +7,9 @@ import {
   Loading,
   Card,
   Tag,
-  Rate
+  Rate,
+  Menu,
+  MenuItem
 } from "element-ui";
 
 import App from "./App.vue";
@@ -23,6 +25,8 @@ Vue.use(Loading);
 Vue.use(Card);
 Vue.use(Tag);
 Vue.use(Rate);
+Vue.use(Menu);
+Vue.use(MenuItem);
 
 Vue.prototype.axios = axios;
 

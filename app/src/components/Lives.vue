@@ -4,7 +4,7 @@
       <div slot="header" align="center" class="clearfix">
         <span>我的 Live</span>
       </div>
-      <div v-loading.fullscreen.lock="loading">
+      <div v-loading="loading">
         <router-link :to="live.id + '/messages'" v-for="live in lives" :key="live.id" class="live">
           <div>{{ live.subject }}</div>
           <div class="speaker">{{ speakers(live) }}</div>
